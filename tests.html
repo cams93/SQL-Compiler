@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Compiler tests</title>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="lex_module.js"></script>
+	<script type="text/javascript" src="tests.js"></script>
+
+	<style type="text/css">
+		.output{
+			width: 60%;
+			height: 300px;
+			border: solid 1px;
+			padding: 5px;
+			overflow-y: scroll
+		}
+
+		.input{
+			width: 60%;
+		}
+	</style>
+</head>
+<body>
+	<div><h1>Lexical analizer</h1></div>
+	<div>
+		<p>Input:</p>
+		<form action="">
+			<input type="text" name="lexinput" placeholder="Query" class="input" />
+			<input type="button" onclick="lex_test(this.form.lexinput.value)" value="Go!">
+		</form>
+		<p>Output:</p>
+		<div class="output">
+			<p id="lex-output"></p>
+		</div>
+	</div>
+</body>
+</html>
