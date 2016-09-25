@@ -1,0 +1,216 @@
+SQL gramatica
+Sinopsis:
+create database
+create table
+insert
+select
+
+<instrucciones> ::= <create db> | <create table> | <insert command> | <select command>
+
+<create db>::= "create" "database" <identificador> ";"
+semantica: genera archivo XML con la meta informacion basica de una base de datos relacional vacia.
+<database>
+  <general information>
+    <name database/>
+  </general information>
+  <tables/>
+</database>
+
+<identificador>::= cadena de caracteres que es más de 1 y menos de 5 caracteres. Este identificador NO esta encerrado entre comillas de ningun tipo.
+
+<create table>::= "create" "table" <identificador> "(" <elementos tabla> ")"  ";"
+semantica: Despues de este comando en el mismo metaarchivo de la base de datos se agrega mas informacion que describe la base de datos.
+Se afecta el nodo <tables>
+<tables>
+  <table>
+    <general information>
+      <name table/>
+      <amount field/>
+      <fields>
+        <field>
+          <name field/>
+          <data type/>
+          <constraints>
+            <constraint> <!- only 1 of the next nodes -->
+              <NN/> <!- boolean value , 1= not null, 0= allow null -->
+              <PK/> <!- boolean value - 1 = is part of the pk, 0= is not part of the pk -->
+              <UQ/> <!- number of the UQ, because each table could have more than one unique key -->
+              <Fk>
+                <table name/>
+                <field name/>
+              </FK>
+            </constraint>
+          </constraints>
+        </field>
+      </fields>
+      <constraints>
+        <constraint id= "##">
+          <type /> <!-- could be PK, FK, UQ, CK -->
+          <local_fields>      <!-- apply for PK, FK, UQ, CK -->
+            <local_field/>
+          </local_fields>
+          <table references/> <!-- apply for FK-->
+          <foreign_fields>    <!-- apply for FK -->
+            <foreign_field/>
+          </foreign_fields>
+          <condition>         <!-- apply for CK -->
+            <operator/>
+            <value type="v/f" />    <!-- v only for values, f if the value is other field -->
+          </condition>
+        </constraint>
+      </constraints>
+    </general information>
+    <values/>
+  </table>
+</tables>
+
+<elementos tabla> ::= <elemento tabla> <elementos tabla prima>
+
+<elementos tabla prima> ::= lambda | "," <elemento tabla> <elementos tabla prima>
+
+<elemento tabla> ::= <columna> | <restriccion>
+
+<columna> ::= <identificador> <tipo datos> <seccion varios>
+
+<tipo datos> ::=  <varchar> | <binary> | <integer> | <date and time> | <XML>
+
+<varchar> ::= "VARCHAR" <longitud cadena>
+
+<longitud cadena> ::= lambda | "("  <numero> ")"
+
+<numero> ::= solo se permitira de 1<= x <= 99.
+De no indicarse la longitud de la cadena esta sera de 1.
+
+<binary> ::= "BIT"
+semantica: se almacenara un 1 o un 0 unicamente
+
+<integer> ::= "INT"
+semantica:  numero entero expresado en 2 bytes.
+
+<date and time> ::= "DATE" | "TIME" | "DATETIME"
+semantica: date indica solo una fecha, con este formato: YYYY-MM-DD
+time indica solo una hora con este formato: HH:MM:SS
+date time indica una fecha hora con este formato: YYYY-MM-DD HH:MM:SS
+
+<xml> ::= "XML"
+semantica: se recibira en un campo una cadena de texto que cumple las reglas de un archivo XML.
+
+<seccion de varios> ::= lambda | <constraint> <seccion de varios>
+semantica: puede ser que un campo no tenga ningun constraint; pero no puede tener <PK> y <UQ> al mismo tiempo.
+
+<constraint> ::= <PK> | <UQ> | <FK> | <NN>
+
+<PK>::= "primary" "key"
+semantica: llave primaria, debe indicar explicitamente la restriccion de no permitir nulos
+  <constraint> <!- only 1 of the next nodes -->
+    <PK/> <!- boolean value - 1 = is part of the pk, 0= is not part of the pk -->
+  </constraint>
+
+<UQ> ::= "unique"
+semantica: llave candidata, debe indicar explicitamente la restriccion de no permitir nulos
+  <constraint> <!- only 1 of the next nodes -->
+    <UQ/> <!- number of the UQ, because each table could have more than one unique key -->
+  </constraint>
+
+<FK> ::= "references" <identificador> "(" <identificador> ")"
+semantica: el primer identificador es el nombre de una tabla y el segundo el nombre de un campo que debe de ser el UNICO que forme la llave primaria
+de esa tabla indicada ( en el primer identificador). Ese campo ademas debe de ser del mismo tipo de dato .
+            <constraint> <!- only 1 of the next nodes -->
+              <Fk id="##" >
+                <table name/>
+                <field name/>
+              </FK>
+            </constraint>
+
+<NN>::= "NOT" "NULL" | "NULL"
+            <constraint> <!- only 1 of the next nodes -->
+              <NN/> <!- boolean value , 1= not null, 0= allow null -->
+            </constraint>
+
+<restriccion> ::= <primary key> | <foreign key> | <unique key> | <check constraint>
+
+<check constraint> ::= "check" <identificador> <operador relacional>  <value literal>
+semantica: Este constraint solo se aplica al momento de insertar un nuevo registro y al actualizar el valor de una tabla.
+el primer identificador es el nombre de un campo en esa tabla. A nivel de tabla todos los registros debe de cumplir a nivel REGISTRO esta restriccion.
+        <constraint id= "##">
+          <type /> <!-- could be PK, FK, UQ, CK -->
+          <local_fields>      <!-- apply for PK, FK, UQ, CK -->
+            <local_field/>
+          </local_fields>
+          <condition>         <!-- apply for CK -->
+            <operator/>
+            <value type="v/f" />    <!-- v only for values, f if the value is other field -->
+          </condition>
+        </constraint>
+
+<value literal> ::= <identificador> | <numero> | <string>
+semantica: identificador es el nombre de un campo en la tabla que actualmente se esta procesando. El numero es un entero y flotante.
+El string es una secuencia entre comillas simples o dobles.
+
+<operador relacional> ::= "<" | "<=" | ">" | ">=" | "==" | "!="
+
+<primary key>::= <PK> "(" <listado identificadores>  ")"
+semantica: todos los identificadores son nombres de campos. todos esos campos no deben de permitir nulos.
+la combinacion de los valores de esos campos es la que NO se puede repetir en la tabla actual.
+Este constraint solo se aplica al momento de insertar un nuevo registro y al actualizar el valor de una tabla.
+  <constraint id= "##">
+    <type /> <!-- could be PK, FK, UQ, CK -->
+    <local_fields>      <!-- apply for PK, FK, UQ, CK -->
+      <local_field/>
+    </local_fields>
+  </constraint>
+
+<foreign Key>::=  "foreign" "key" "(" <listado identificadores>  ")" "references" <identificador> "(" <listado identificadores>  ")"
+semantica:todos los identificadores son nombres de campos. El siguiente identificador debe ser el nombre de una tabla, incluso esa misma y el
+siguiente listado de identificadores son tambien nombres de campos, los cuales pueden ser la llave primaria de la tabla indicada anteriormente o
+formar parte de una llave candidata. Esta restriccion se aplica al momento de insertar un nuevo registro y al actualizar el valor de una tabla.
+  <constraint id= "##">
+    <type /> <!-- could be PK, FK, UQ, CK -->
+    <local_fields>      <!-- apply for PK, FK, UQ, CK -->
+      <local_field/>
+    </local_fields>
+    <table references/> <!-- apply for FK-->
+    <foreign_fields>    <!-- apply for FK -->
+      <foreign_field/>
+    </foreign_fields>
+  </constraint>
+
+<listado identificadores> ::= <identificador> <listado identificadores prima>
+
+<listado identificadores prima> ::= lambda | "," <identificador> <listado identificadores prima>
+
+<unique key> ::= <UQ> "(" <listado identificadores>  ")"
+semantica: Este constraint solo se aplica al momento de insertar un nuevo registro y al actualizar el valor de una tabla.
+todos los campos debe de tener explicitamente la indicacion de que no permiten nulos.
+  <constraint id= "##">
+    <type /> <!-- could be PK, FK, UQ, CK -->
+    <local_fields>      <!-- apply for PK, FK, UQ, CK -->
+      <local_field/>
+    </local_fields>
+  </constraint>
+
+<insert command> ::= "INSERT" "INTO" <identificador> "VALUES" "(" <listado valores>  ")" ";"
+semantica: El identificador es el nombre de una tabla de la base de datos actual. El listado de valores debe de ser igual a la cantidad de campos
+que tiene esa tabla. los valores indicados deben de ser del tipo de dato que son los campos declarados en la tabla al momento del "create table"
+Si uno de esos valores es la literal NULL entonces se debe de verificar que el campo al que corresponde ese valor permita nulos.
+
+<listado valores> ::= <valor> <listado valores prima>
+
+<listado valores prima> ::= lambda | "," <valor> <listado valores prima>
+
+<valor> ::= <string> | <numero> | <numero decimal> | NULL
+
+<string> ::= las cadenas son secuencias de caracteres encerrados entre comillas dobles o simples.
+semantica: las cadenas pueden ser simplemente palabras o que cumplen un formato especifico. Si estos formatos son los
+reconocidos para DATE, TIME o DATETIME, entonces seran manejados posteriormente como uno de esos tipos.
+
+<select command> ::= "SELECT" <values selected> "from" <listado identificadores> <condicionales> ";"
+semantica: los identificadores en la seccion from son nombres de tablas definidas previamente en la base de datos.
+
+<values selected> ::= <asterisco> | <listado identificadores>
+semantica: los identificadores son nombres de campos que den de estar definidos en alguna de las tablas indicadas en el "from"
+
+<asterisco> ::= "*"
+
+<condicionales> ::= lambda | "WHERE" <identificador> <operador relacional>  <value literal>
+semantica: el identificador es el nombre de un campo que debe de estar definido en alguna de las tablsa indicadas en el FROM.
