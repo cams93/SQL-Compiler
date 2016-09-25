@@ -22,18 +22,18 @@ y pasas al siguiente token
 var debug = true;
 function instrucciones(){
     if(verificar("select")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar select in instrucciones");
         select_command();
     }else if(verificar("insert")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar insert in instrucciones");
         insert_command();
     }else if(verificar("create")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar create in instrucciones");
         if(verificar("table")) {
-            if(debug) console.log("");
+            if(debug) console.log("verificar table in instrucciones");
             create_table();
         }else if(verificar("database")){
-            if(debug) console.log("");
+            if(debug) console.log("verificar database in instrucciones");
             create_db();
         }else{
             console.log("use table or database after create");
@@ -56,12 +56,12 @@ semantica: genera archivo XML con la meta informacion basica de una base de dato
 
 function create_db(){
     if(exigir("create")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir create in create_db");
         if(exigir("database")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir database in create_db");
             identificador();
             if(exigir(";")){
-                if(debug) console.log("");
+                if(debug) console.log("exigir ; in create_db");
             }else{
                 console.log("missing ;");
             }
@@ -80,7 +80,7 @@ function create_db(){
 function identificador(){
     //regex identifier
     if(exigir("identifier")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir indentifier in identificador");
     }else{
         console.log("missing identifier");
     }
@@ -136,17 +136,17 @@ Se afecta el nodo <tables>
 
 function create_table(){
     if(exigir("create")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir create in create_table");
         if(exigir("table")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir table in create_table");
             identificador();
             if(exigir("(")){
-                if(debug) console.log("");
+                if(debug) console.log("exigir ( in create_table");
                 elementos_tabla();
                 if(exigir(")")){
-                    if(debug) console.log("");
+                    if(debug) console.log("exigir ) in create_table");
                     if(exigir(";")){
-                        if(debug) console.log("");
+                        if(debug) console.log("exigir ; in create_table");
                     }else{
                         console.log("missing ;");
                     }
@@ -178,9 +178,9 @@ function elementos_tabla(){
 
 function elementos_tabla_prima() {
     if(verificar(",")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar , in elementos_tabla_prima");
         if(exigir(",")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir , in elementos_tabla_prima");
             elemento_tabla();
             elementos_tabla_prima();
         }else{
@@ -195,10 +195,10 @@ function elementos_tabla_prima() {
 
 function elemento_tabla(){
     if(verificar("identifier")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar identifier in elemento_tabla");
         columna();
     }else if(verificar("primary") || verificar("unique") || verificar("references") || verificar("not") || verificar("null")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar primary | unique | references | not | null in elemento_tabla");
         restriccion();
     }else{
         console.log("missing column or constraint")
@@ -221,19 +221,19 @@ function columna(){
 
 function tipo_datos(){
     if(verificar("varchar")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar varchar in tipo_datos");
         varchar();
     }else if(verificar("bit")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar bit in tipo_datos");
         binary();
     }else if(verificar("int")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar int in tipo_datos");
         integer();
     }else if(verificar("date") || cerificar("time") || verificar("datetime")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar date | time | datetime in tipo_datos");
         date_and_time();
     }else if(verificar("xml")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar xml in tipo_datos");
         xml();
     }
 }
@@ -245,7 +245,7 @@ function tipo_datos(){
 function varchar(){
     //regex varchar
     if(exigir("varchar")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir varchar ");
         longitud_cadena();
     }else{
         console.log("missing varchar");
@@ -258,17 +258,17 @@ function varchar(){
 
 function longitud_cadena(){
     if(verificar("(")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar ( in longitud_cadena");
         if(exigir("(")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir ( in longitud_cadena");
             numero();
             if(exigir(")")){
-                if(debug) console.log("");
+                if(debug) console.log("exigir ) in longitud_cadena");
             }else{
-                console.log(")");
+                console.log("missing )");
             }
         }else{
-            console.log("(");
+            console.log("missing (");
         }
     }
 }
@@ -281,7 +281,7 @@ De no indicarse la longitud de la cadena esta sera de 1.
 function numero(){
     //regex numero
     if(exigir("value")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir value in numero");
     }else{
         console.log("missing numero");
     }
@@ -295,7 +295,7 @@ semantica: se almacenara un 1 o un 0 unicamente
 function binary(){
     //regex bit
     if(exigir("bit")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir bit in binary");
     }else{
         console.log("missing bit");
     }
@@ -309,7 +309,7 @@ semantica:  numero entero expresado en 2 bytes.
 function integer(){
     //regex int
     if(exigir("int")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir int in integer");
     }else{
         console.log("missing int");
     }
@@ -324,7 +324,7 @@ date time indica una fecha hora con este formato: YYYY-MM-DD HH:MM:SS
 
 function date_and_time(){
     if(exigir("value")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir value in date_and_time");
     }else{
         console.log("missing date, time or date and time");
     }
@@ -337,7 +337,7 @@ semantica: se recibira en un campo una cadena de texto que cumple las reglas de 
 
 function xml(){
     if(exigir("xml")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir xml in xml");
     }else{
         console.log("missing xml");
     }
@@ -350,7 +350,7 @@ semantica: puede ser que un campo no tenga ningun constraint; pero no puede tene
 
 function seccion_de_varios(){
     if(verificar("primary") || verificar("unique") || verificar("references") || verificar("not") || verificar("null")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar primary | unique | references | not | null in seccion_de_varios");
         constraint();
         seccion_de_varios();
     }
@@ -362,19 +362,19 @@ function seccion_de_varios(){
 
 function constraint(){
     if(verificar("primary")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar primary in constraint");
         pk();
     }else if(verificar("unique")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar unique in constraint");
         uq();
     }else if(verificar("references")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar references in constraint");
         fk();
     }else if(verificar("not")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar not in constraint");
         nn();
     }else if(verificar("null")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar null in constraint");
         nn();
     }
 }
@@ -389,8 +389,9 @@ semantica: llave primaria, debe indicar explicitamente la restriccion de no perm
 
 function pk(){
     if(exigir("primary")){
+        if(debug) console.log("exigir primary in pk");
         if(exigir("key")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir key in pk");
         }else{
             console.log("missing key");
         }
@@ -409,7 +410,7 @@ semantica: llave candidata, debe indicar explicitamente la restriccion de no per
 
 function uq(){
     if(exigir("unique")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir unique in uq");
     }else{
         console.log("unique");
     }
@@ -429,13 +430,13 @@ de esa tabla indicada ( en el primer identificador). Ese campo ademas debe de se
 
 function fk(){
     if(exigir("references")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir refrences in fk");
         identificador();
         if(exigir("(")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir ( in fk");
             identificador();
             if(exigir(")")){
-                if(debug) console.log("");
+                if(debug) console.log("exigir ) in fk");
             }else{
                 console.log("missing )")
             }
@@ -456,11 +457,11 @@ function fk(){
 
 function nn(){
     if(verificar("not")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar not in nn");
         if(exigir("not")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir not in nn");
             if(exigir("null")){
-                if(debug) console.log("");
+                if(debug) console.log("exigir null in nn");
             }
             else{
                 console.log("missing null")
@@ -469,9 +470,9 @@ function nn(){
             console.log("missing not")
         }
     }else if(verificar("null")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar null in nn");
         if(exigir("null")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir null in nn");
         }else{
             console.log("missing null");
         }
@@ -486,16 +487,16 @@ function nn(){
 
 function restriccion(){
     if(verificar(("primary"))){
-        if(debug) console.log("");
+        if(debug) console.log("verificar primary in restriccion");
         primary_key();
     }else if(verificar("references")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar references in restriccion");
         foreign_key();
     }else if(verificar("unique")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar unique in restriccion");
         unique_key();
     }else if(verificar("check")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar check in restriccion");
         check_constraint();
     }
 }
@@ -518,7 +519,7 @@ el primer identificador es el nombre de un campo en esa tabla. A nivel de tabla 
 
 function check_constraint(){
     if(exigir("check")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir check in check_constraint");
         identificador();
         operador_relacional();
         value_literal();
@@ -535,10 +536,10 @@ El string es una secuencia entre comillas simples o dobles.
 
 function value_literal(){
     if(verificar("identifier")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar identifier in value_literal");
         identificador();
     }else if(verificar("value")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar value in value_literal");
         string();
         //numero();
     }
@@ -550,44 +551,44 @@ function value_literal(){
 
 function operador_relacional(){
     if(verificar("<")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar < in operador_relacional");
         if(exigir("<")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir < in operador_relacional");
         }else{
             console.log("missing <");
         }
     }else if(verificar("<=")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar <= in operador_relacional");
         if(exigir("<=")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir <= in operador_relacional");
         }else{
             console.log("missing <=");
         }
     }else if(verificar(">")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar > in operador_relacional");
         if(exigir(">")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir > in operador_relacional");
         }else{
             console.log("missing >");
         }
     }else if(verificar(">=")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar >= in operador_relacional");
         if(exigir(">=")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir >= in operador_relacional");
         }else{
             console.log("missing >=");
         }
     }else if(verificar("==")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar == in operador_relacional");
         if(exigir("==")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir == in operador_relacional");
         }else{
             console.log("missing ==");
         }
     }else if(verificar("!=")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar != in operador_relacional");
         if(exigir("!=")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir != in operador_relacional");
         }else{
             console.log("missing !=");
         }
@@ -612,10 +613,10 @@ Este constraint solo se aplica al momento de insertar un nuevo registro y al act
 function primary_key(){
     pk();
     if(exigir("(")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir ( in primary_key");
         listado_identificadores();
         if(exigir(")")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir ) in primary_key");
         }else{
             console.log("missing )");
         }
@@ -643,22 +644,22 @@ formar parte de una llave candidata. Esta restriccion se aplica al momento de in
 
 function foreign_key(){
     if(exigir("foreign")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir foreign in foreign_key");
         if(exigir("key")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir key in foreign_key");
             if(exigir("(")){
-                if(debug) console.log("");
+                if(debug) console.log("exigir ( in foreign_key");
                 listado_identificadores();
                 if(exigir(")")){
-                    if(debug) console.log("");
+                    if(debug) console.log("exigir ) in foreign_key");
                     if(exigir("references")){
-                        if(debug) console.log("");
+                        if(debug) console.log("exigir references in foreign_key");
                         identificador();
                         if(exigir("(")){
-                            if(debug) console.log("");
+                            if(debug) console.log("exigir ( in foreign_key");
                             listado_identificadores();
                             if(exigir(")")){
-                                if(debug) console.log("");
+                                if(debug) console.log("exigir ) in foreign_key");
                             }else{
                                 console.log("missing )");
                             }
@@ -697,9 +698,9 @@ function listado_identificadores(){
 
 function listado_identificadores_prima(){
     if(verificar(",")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar , in listado_identificadores_prima");
         if(exigir(",")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir , in listado_identificadores_prima");
             identificador();
             listado_identificadores_prima();
         }else{
@@ -723,10 +724,10 @@ todos los campos debe de tener explicitamente la indicacion de que no permiten n
 function unique_key(){
     uq();
     if(exigir("(")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir ( in unique_key");
         listado_identificadores();
         if(exigir(")")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir ) in unique_key");
         }else{
             console.log("missing )");
         }
@@ -744,19 +745,19 @@ Si uno de esos valores es la literal NULL entonces se debe de verificar que el c
 
 function insert_command(){
     if(exigir("insert")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir insert in insert_command");
         if(exigir("into")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir into in insert_command");
             identificador();
             if(exigir("values")){
-                if(debug) console.log("");
+                if(debug) console.log("exigir values in insert_command");
                 if(exigir("(")){
-                    if(debug) console.log("");
+                    if(debug) console.log("exigir ( in insert_command");
                     listado_valores();
                     if(exigir(")")){
-                        if(debug) console.log("");
+                        if(debug) console.log("exigir ) in insert_command");
                         if(exigir(";")){
-                            if(debug) console.log("");
+                            if(debug) console.log("exigir ; in insert_command");
                         }else{
                             console.log("missing ;");
                         }
@@ -792,9 +793,9 @@ function listado_valores(){
 
 function listado_valores_prima(){
     if(verificar(",")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar , in listado_valores_prima");
         if(exigir(",")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir , in listado_valores_prima");
             valor();
             listado_valores_prima();
         }else{
@@ -809,14 +810,14 @@ function listado_valores_prima(){
 
 function valor(){
     if(verificar("value")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar value in valor");
         string();
         //numero();
         //numero_decimal();
     }else if(verificar("null")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar null in valor");
         if(exigir("null")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir null in valor");
         }else{
             console.log("missing null");
         }
@@ -831,7 +832,7 @@ reconocidos para DATE, TIME o DATETIME, entonces seran manejados posteriormente 
 
 function string(){
     if(exigir("value")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir value in string");
     }else{
         console.log("missing string");
     }
@@ -844,14 +845,14 @@ semantica: los identificadores en la seccion from son nombres de tablas definida
 
 function select_command(){
     if(exigir("select")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir select in select_command");
         values_selected();
         if(exigir("from")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir from in select_command");
             listado_identificadores();
             condicionales();
             if(exigir(";")){
-                if(debug) console.log("");
+                if(debug) console.log("exigir ; in select_command");
             }else{
                 console.log("missing ;");
             }
@@ -870,7 +871,7 @@ semantica: los identificadores son nombres de campos que den de estar definidos 
 
 function values_selected(){
     if(verificar("*")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar * in values_selected");
         asterisco();
     }else{
         listado_identificadores();
@@ -883,9 +884,9 @@ function values_selected(){
 
 function asterisco(){
     if(exigir("*")){
-        if(debug) console.log("");
+        if(debug) console.log("exigir * in asterisco");
     }else{
-        console.log("*");
+        console.log("missing *");
     }
 }
 
@@ -896,9 +897,9 @@ semantica: el identificador es el nombre de un campo que debe de estar definido 
 
 function condicionales(){
     if(verificar("where")){
-        if(debug) console.log("");
+        if(debug) console.log("verificar where in condicionales");
         if(exigir("where")){
-            if(debug) console.log("");
+            if(debug) console.log("exigir where in condicionales");
             identificador();
             operador_relacional();
             value_literal();
