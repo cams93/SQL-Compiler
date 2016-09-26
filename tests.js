@@ -2,7 +2,12 @@ function lex_test(input){
 	
 	var result = lex(input);
 	var tokens = result.tokens;
+    var symbols_table = syntactic(tokens);
+
 	var output ="";
+    output += "-------------------------------------------------<br>";
+    output += "           Lexical Analizer<br>";
+    output += "-------------------------------------------------<br>";
 	for(i in tokens){
 		output += JSON.stringify(tokens[i]) + "<br>";
 	}
@@ -12,6 +17,12 @@ function lex_test(input){
 	for(i in result.errors){
 		output += JSON.stringify(result.errors[i]) + "<br>";
 	}
+    output += "-------------------------------------------------<br>";
+    output += "Syntactic Analizer<br>";
+    output += "-------------------------------------------------<br>";
+    for(i in symbols_table){
+        output += JSON.stringify(symbols_table[i]) + "<br>";
+    }
 
 	document.getElementById("lex-output").innerHTML= output;
 }

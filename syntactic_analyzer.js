@@ -17,9 +17,58 @@ nombre | tipo de dato
 2/2/2      fecha
 y pasas al siguiente token
 <instrucciones> ::= <create db> | <create table> | <insert command> | <select command>
+
+TEST 1 = create database pepito;
+TEST 2 = create table tamigos (nom varchar(30) not null primary key, edad int null, fecha date);
+TEST 3 = insert into tamigos values('jesus', 40, '1976-09-14');
+TEST 4 = select nom,edad from tamigos where edad>30;
 */
 
 var debug = true;
+var index = 0;
+var tokens;
+var end;
+var symbols_table;
+var symbol;
+
+function syntactic(s){
+    tokens = s;
+    end = false;
+    symbols_table = [];
+    symbol = {};
+    instrucciones();
+    console.log(symbols_table);
+    return symbols_table;
+}
+
+function verificar(token){
+    if(end){
+        return false;
+    }
+    return (tokens[index].value == token || token == "identifier" || token == "value");
+}
+
+function exigir(token){
+    if(end){
+        return false;
+    }else if(index >= tokens.length){
+        console.log("the command is incomplete");
+        end = true;
+        return false;
+    }else if(token == "identifier" || token == "value"){
+        symbol.type = tokens[index].type;
+        symbol.value = tokens[index].value;
+        symbols_table.push(symbol);
+        symbol = {};
+        index++;
+        return true;
+    }else if(tokens[index].value == token){
+        index++;
+        return true;
+    }
+    return false;
+}
+
 function instrucciones(){
     if(verificar("select")){
         if(debug) console.log("verificar select in instrucciones");
@@ -27,8 +76,8 @@ function instrucciones(){
     }else if(verificar("insert")){
         if(debug) console.log("verificar insert in instrucciones");
         insert_command();
-    }else if(verificar("create")){
-        if(debug) console.log("verificar create in instrucciones");
+    }else if(exigir("create")){
+        if(debug) console.log("exigir create in instrucciones");
         if(verificar("table")) {
             if(debug) console.log("verificar table in instrucciones");
             create_table();
@@ -55,21 +104,16 @@ semantica: genera archivo XML con la meta informacion basica de una base de dato
  */
 
 function create_db(){
-    if(exigir("create")){
-        if(debug) console.log("exigir create in create_db");
-        if(exigir("database")){
-            if(debug) console.log("exigir database in create_db");
-            identificador();
-            if(exigir(";")){
-                if(debug) console.log("exigir ; in create_db");
-            }else{
-                console.log("missing ;");
-            }
+    if(exigir("database")){
+        if(debug) console.log("exigir database in create_db");
+        identificador();
+        if(exigir(";")){
+            if(debug) console.log("exigir ; in create_db");
         }else{
-            console.log("missing database");
+            console.log("missing ;");
         }
     }else{
-        console.log("missing create");
+        console.log("missing database");
     }
 }
 
@@ -135,32 +179,27 @@ Se afecta el nodo <tables>
  */
 
 function create_table(){
-    if(exigir("create")){
-        if(debug) console.log("exigir create in create_table");
-        if(exigir("table")){
-            if(debug) console.log("exigir table in create_table");
-            identificador();
-            if(exigir("(")){
-                if(debug) console.log("exigir ( in create_table");
-                elementos_tabla();
-                if(exigir(")")){
-                    if(debug) console.log("exigir ) in create_table");
-                    if(exigir(";")){
-                        if(debug) console.log("exigir ; in create_table");
-                    }else{
-                        console.log("missing ;");
-                    }
+    if(exigir("table")){
+        if(debug) console.log("exigir table in create_table");
+        identificador();
+        if(exigir("(")){
+            if(debug) console.log("exigir ( in create_table");
+            elementos_tabla();
+            if(exigir(")")){
+                if(debug) console.log("exigir ) in create_table");
+                if(exigir(";")){
+                    if(debug) console.log("exigir ; in create_table");
                 }else{
-                    console.log("missing )");
+                    console.log("missing ;");
                 }
             }else{
-                console.log("missing (");
+                console.log("missing )");
             }
         }else{
-            console.log("missing table");
+            console.log("missing (");
         }
     }else{
-        console.log("missing create");
+        console.log("missing table");
     }
 }
 /*
@@ -229,7 +268,7 @@ function tipo_datos(){
     }else if(verificar("int")){
         if(debug) console.log("verificar int in tipo_datos");
         integer();
-    }else if(verificar("date") || cerificar("time") || verificar("datetime")){
+    }else if(verificar("date") || verificar("time") || verificar("datetime")){
         if(debug) console.log("verificar date | time | datetime in tipo_datos");
         date_and_time();
     }else if(verificar("xml")){
@@ -323,8 +362,21 @@ date time indica una fecha hora con este formato: YYYY-MM-DD HH:MM:SS
  */
 
 function date_and_time(){
-    if(exigir("value")){
-        if(debug) console.log("exigir value in date_and_time");
+    if(verificar("date")){
+        if(debug) console.log("verificar date in in date_and_time");
+        if(exigir("date")){
+            if(debug) console.log("exigir date in in date_and_time");
+        }
+    }else if(verificar("time")){
+        if(debug) console.log("verificar time in in date_and_time");
+        if(exigir("time")){
+            if(debug) console.log("exigir time in in date_and_time");
+        }
+    }else if(verificar("datetime")){
+        if(debug) console.log("verificar datetime in in date_and_time");
+        if(exigir("datetime")){
+            if(debug) console.log("exigir datetime in in date_and_time");
+        }
     }else{
         console.log("missing date, time or date and time");
     }
