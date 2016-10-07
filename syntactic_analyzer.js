@@ -22,6 +22,15 @@ TEST 1 = create database pepito;
 TEST 2 = create table tamigos (nom varchar(30) not null primary key, edad int null, fecha date);
 TEST 3 = insert into tamigos values('jesus', 40, '1976-09-14');
 TEST 4 = select nom,edad from tamigos where edad>30;
+
+un mismo archivo para todas las bases de datos
+el archivo se va a llamar databases.xml
+si no existe lo generamos
+si existe lo abrimos y checamos si existe una base de datos con el mismo nombre y lanzamos error
+si no existe  modificamos el archivo xml
+cerrar el archivo xml
+
+create table (campos)
 */
 
 var debug = true;
@@ -30,15 +39,21 @@ var tokens;
 var end;
 var symbols_table;
 var symbol;
+var intermediate_code;
 
 function syntactic(s){
     tokens = s;
     end = false;
     symbols_table = [];
+    intermediate_code = [];
     symbol = {};
     instrucciones();
     console.log(symbols_table);
     return symbols_table;
+}
+
+function getIntermediateCode(){
+    return intermediate_code;
 }
 
 function verificar(token){
@@ -68,6 +83,10 @@ function exigir(token){
     }
     return false;
 }
+
+/*
+<instrucciones> ::= <create db> | <create table> | <insert command> | <select command>
+*/
 
 function instrucciones(){
     if(verificar("select")){
@@ -109,6 +128,7 @@ function create_db(){
         identificador();
         if(exigir(";")){
             if(debug) console.log("exigir ; in create_db");
+            intermediate_code.push(300, 666, 0, 301);
         }else{
             console.log("missing ;");
         }
