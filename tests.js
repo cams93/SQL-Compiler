@@ -1,11 +1,26 @@
 function lex_test(input){
-	
-	var result = lex(input);
-	var tokens = result.tokens;
-    var symbols_table = syntactic(tokens);
-	var intermediate_code = getIntermediateCode();
 
 	var output ="";
+	document.getElementById("lex-output").innerHTML= output;
+	try{
+		console.log("input: "+input);
+		var result = lex(input);
+		var tokens = result.tokens;
+		console.log("tokens");
+		console.log(tokens);
+	    var symbols_table = syntactic(tokens);
+		var intermediate_code = getIntermediateCode();
+	}
+	catch(error){
+		document.getElementById("result-text").className = "red-text darken-2";
+		document.getElementById("result-text").innerHTML = error;
+		return;
+	}
+
+
+	document.getElementById("result-text").className = "blue-text text-darken-2";
+	document.getElementById("result-text").innerHTML = "Procesamiento correcto";
+
     output += "-------------------------------------------------<br>";
     output += "           Lexical Analizer<br>";
     output += "-------------------------------------------------<br>";
