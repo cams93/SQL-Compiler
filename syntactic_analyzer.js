@@ -41,6 +41,8 @@ var symbols_table;
 var symbol;
 var intermediate_code;
 
+lex_test(document.getElementById('lexinput').value);
+
 function syntactic(s){
     tokens = s;
     end = false;
