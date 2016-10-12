@@ -67,7 +67,7 @@ function exigir(token){
     if(end){
         return false;
     }else if(index >= tokens.length){
-        console.log("the command is incomplete");
+        throw new Error("the command is incomplete");
         end = true;
         return false;
     }else if(token == "identifier" || token == "value"){
@@ -104,10 +104,10 @@ function instrucciones(){
             if(debug) console.log("verificar database in instrucciones");
             create_db();
         }else{
-            console.log("use table or database after create");
+            throw new Error("use table or database after create");
         }
     }else{
-        console.log("use select, create or insert");
+        throw new Error("use select, create or insert");
     }
 }
 
@@ -130,10 +130,10 @@ function create_db(){
             if(debug) console.log("exigir ; in create_db");
             intermediate_code.push(300, 666, 0, 301);
         }else{
-            console.log("missing ;");
+            throw new Error("missing ;");
         }
     }else{
-        console.log("missing database");
+        throw new Error("missing database");
     }
 }
 
@@ -146,7 +146,7 @@ function identificador(){
     if(exigir("identifier")){
         if(debug) console.log("exigir indentifier in identificador");
     }else{
-        console.log("missing identifier");
+        throw new Error("missing identifier");
     }
 }
 
@@ -210,16 +210,16 @@ function create_table(){
                 if(exigir(";")){
                     if(debug) console.log("exigir ; in create_table");
                 }else{
-                    console.log("missing ;");
+                    throw new Error("missing ;");
                 }
             }else{
-                console.log("missing )");
+                throw new Error("missing )");
             }
         }else{
-            console.log("missing (");
+            throw new Error("missing (");
         }
     }else{
-        console.log("missing table");
+        throw new Error("missing table");
     }
 }
 /*
@@ -243,7 +243,7 @@ function elementos_tabla_prima() {
             elemento_tabla();
             elementos_tabla_prima();
         }else{
-            console.log("missing ,");
+            throw new Error("missing ,");
         }
     }
 }
@@ -260,7 +260,7 @@ function elemento_tabla(){
         if(debug) console.log("verificar primary | unique | references | not | null in elemento_tabla");
         restriccion();
     }else{
-        console.log("missing column or constraint")
+        throw new Error("missing column or constraint")
     }
 }
 
@@ -307,7 +307,7 @@ function varchar(){
         if(debug) console.log("exigir varchar ");
         longitud_cadena();
     }else{
-        console.log("missing varchar");
+        throw new Error("missing varchar");
     }
 }
 
@@ -324,10 +324,10 @@ function longitud_cadena(){
             if(exigir(")")){
                 if(debug) console.log("exigir ) in longitud_cadena");
             }else{
-                console.log("missing )");
+                throw new Error("missing )");
             }
         }else{
-            console.log("missing (");
+            throw new Error("missing (");
         }
     }
 }
@@ -342,7 +342,7 @@ function numero(){
     if(exigir("value")){
         if(debug) console.log("exigir value in numero");
     }else{
-        console.log("missing numero");
+        throw new Error("missing numero");
     }
 }
 
@@ -356,7 +356,7 @@ function binary(){
     if(exigir("bit")){
         if(debug) console.log("exigir bit in binary");
     }else{
-        console.log("missing bit");
+        throw new Error("missing bit");
     }
 }
 
@@ -370,7 +370,7 @@ function integer(){
     if(exigir("int")){
         if(debug) console.log("exigir int in integer");
     }else{
-        console.log("missing int");
+        throw new Error("missing int");
     }
 }
 
@@ -398,7 +398,7 @@ function date_and_time(){
             if(debug) console.log("exigir datetime in in date_and_time");
         }
     }else{
-        console.log("missing date, time or date and time");
+        throw new Error("missing date, time or date and time");
     }
 }
 
@@ -411,7 +411,7 @@ function xml(){
     if(exigir("xml")){
         if(debug) console.log("exigir xml in xml");
     }else{
-        console.log("missing xml");
+        throw new Error("missing xml");
     }
 }
 
@@ -465,10 +465,10 @@ function pk(){
         if(exigir("key")){
             if(debug) console.log("exigir key in pk");
         }else{
-            console.log("missing key");
+            throw new Error("missing key");
         }
     }else{
-        console.log("missing primary");
+        throw new Error("missing primary");
     }
 }
 
@@ -484,7 +484,7 @@ function uq(){
     if(exigir("unique")){
         if(debug) console.log("exigir unique in uq");
     }else{
-        console.log("unique");
+        throw new Error("unique");
     }
 }
 
@@ -510,13 +510,13 @@ function fk(){
             if(exigir(")")){
                 if(debug) console.log("exigir ) in fk");
             }else{
-                console.log("missing )")
+                throw new Error("missing )")
             }
         }else{
-            console.log("missing (")
+            throw new Error("missing (")
         }
     }else{
-        console.log("references")
+        throw new Error("references")
     }
 }
 
@@ -536,20 +536,20 @@ function nn(){
                 if(debug) console.log("exigir null in nn");
             }
             else{
-                console.log("missing null")
+                throw new Error("missing null")
             }
         }else{
-            console.log("missing not")
+            throw new Error("missing not")
         }
     }else if(verificar("null")){
         if(debug) console.log("verificar null in nn");
         if(exigir("null")){
             if(debug) console.log("exigir null in nn");
         }else{
-            console.log("missing null");
+            throw new Error("missing null");
         }
     }else{
-        console.log("missing not or not null")
+        throw new Error("missing not or not null")
     }
 }
 
@@ -596,7 +596,7 @@ function check_constraint(){
         operador_relacional();
         value_literal();
     }else{
-        console.log("missing check");
+        throw new Error("missing check");
     }
 }
 
@@ -627,7 +627,7 @@ function operador_relacional(){
         if(exigir("<")){
             if(debug) console.log("exigir < in operador_relacional");
         }else{
-            console.log("missing <");
+            throw new Error("missing <");
         }
     }else if(verificar("<=")){
         if(debug) console.log("verificar <= in operador_relacional");
@@ -641,31 +641,31 @@ function operador_relacional(){
         if(exigir(">")){
             if(debug) console.log("exigir > in operador_relacional");
         }else{
-            console.log("missing >");
+            throw new Error("missing >");
         }
     }else if(verificar(">=")){
         if(debug) console.log("verificar >= in operador_relacional");
         if(exigir(">=")){
             if(debug) console.log("exigir >= in operador_relacional");
         }else{
-            console.log("missing >=");
+            throw new Error("missing >=");
         }
     }else if(verificar("==")){
         if(debug) console.log("verificar == in operador_relacional");
         if(exigir("==")){
             if(debug) console.log("exigir == in operador_relacional");
         }else{
-            console.log("missing ==");
+            throw new Error("missing ==");
         }
     }else if(verificar("!=")){
         if(debug) console.log("verificar != in operador_relacional");
         if(exigir("!=")){
             if(debug) console.log("exigir != in operador_relacional");
         }else{
-            console.log("missing !=");
+            throw new Error("missing !=");
         }
     }else{
-        console.log("missing < | <= | > | >= | == | !=");
+        throw new Error("missing < | <= | > | >= | == | !=");
     }
 }
 
@@ -690,16 +690,16 @@ function primary_key(){
         if(exigir(")")){
             if(debug) console.log("exigir ) in primary_key");
         }else{
-            console.log("missing )");
+            throw new Error("missing )");
         }
     }else{
-        console.log("missing (");
+        throw new Error("missing (");
     }
 }
 
 /*
 <foreign Key>::=  "foreign" "key" "(" <listado identificadores>  ")" "references" <identificador> "(" <listado identificadores>  ")"
-semantica:todos los identificadores son nombres de campos. El siguiente identificador debe ser el nombre de una tabla, incluso esa misma y el 
+semantica:todos los identificadores son nombres de campos. El siguiente identificador debe ser el nombre de una tabla, incluso esa misma y el
 siguiente listado de identificadores son tambien nombres de campos, los cuales pueden ser la llave primaria de la tabla indicada anteriormente o
 formar parte de una llave candidata. Esta restriccion se aplica al momento de insertar un nuevo registro y al actualizar el valor de una tabla.
   <constraint id= "##">
@@ -733,25 +733,25 @@ function foreign_key(){
                             if(exigir(")")){
                                 if(debug) console.log("exigir ) in foreign_key");
                             }else{
-                                console.log("missing )");
+                                throw new Error("missing )");
                             }
                         }else{
-                            console.log("missing (");
+                            throw new Error("missing (");
                         }
                     }else{
-                        console.log("missing references");
+                        throw new Error("missing references");
                     }
                 }else{
-                    console.log(")")
+                    throw new Error(")")
                 }
             }else{
-                console.log("missing (");
+                throw new Error("missing (");
             }
         }else{
-            console.log("missing key");
+            throw new Error("missing key");
         }
     }else{
-        console.log("missing foreign");
+        throw new Error("missing foreign");
     }
 }
 
@@ -776,7 +776,7 @@ function listado_identificadores_prima(){
             identificador();
             listado_identificadores_prima();
         }else{
-            console.log("missing ,");
+            throw new Error("missing ,");
         }
     }
 }
@@ -801,10 +801,10 @@ function unique_key(){
         if(exigir(")")){
             if(debug) console.log("exigir ) in unique_key");
         }else{
-            console.log("missing )");
+            throw new Error("missing )");
         }
     }else{
-        console.log("missing (");
+        throw new Error("missing (");
     }
 }
 
@@ -831,22 +831,22 @@ function insert_command(){
                         if(exigir(";")){
                             if(debug) console.log("exigir ; in insert_command");
                         }else{
-                            console.log("missing ;");
+                            throw new Error("missing ;");
                         }
                     }else{
-                        console.log("missing )");
+                        throw new Error("missing )");
                     }
                 }else{
-                    console.log("missing(");
+                    throw new Error("missing(");
                 }
             }else{
-                console.log("missing values");
+                throw new Error("missing values");
             }
         }else{
-            console.log("missing into");
+            throw new Error("missing into");
         }
     }else{
-        console.log("missing insert");
+        throw new Error("missing insert");
     }
 }
 
@@ -871,7 +871,7 @@ function listado_valores_prima(){
             valor();
             listado_valores_prima();
         }else{
-            console.log("missing ,");
+            throw new Error("missing ,");
         }
     }
 }
@@ -891,7 +891,7 @@ function valor(){
         if(exigir("null")){
             if(debug) console.log("exigir null in valor");
         }else{
-            console.log("missing null");
+            throw new Error("missing null");
         }
     }
 }
@@ -906,7 +906,7 @@ function string(){
     if(exigir("value")){
         if(debug) console.log("exigir value in string");
     }else{
-        console.log("missing string");
+        throw new Error("missing string");
     }
 }
 
@@ -926,13 +926,13 @@ function select_command(){
             if(exigir(";")){
                 if(debug) console.log("exigir ; in select_command");
             }else{
-                console.log("missing ;");
+                throw new Error("missing ;");
             }
         }else{
-            console.log("missing from");
+            throw new Error("missing from");
         }
     }else{
-        console.log("missing select");
+        throw new Error("missing select");
     }
 }
 
@@ -958,7 +958,7 @@ function asterisco(){
     if(exigir("*")){
         if(debug) console.log("exigir * in asterisco");
     }else{
-        console.log("missing *");
+        throw new Error("missing *");
     }
 }
 
@@ -976,7 +976,7 @@ function condicionales(){
             operador_relacional();
             value_literal();
         }else{
-            console.log("missing where");
+            throw new Error("missing where");
         }
     }
 }
