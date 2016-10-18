@@ -35,6 +35,7 @@ create table (campos)
 
 var debug = true;
 var index = 0;
+var symbolN = 0;
 var tokens;
 var end;
 var symbols_table;
@@ -47,11 +48,14 @@ function syntactic(s){
     index = 0;
     tokens = s;
     end = false;
-    symbols_table = [];
+    symbols_table = {};
     intermediate_code = [];
     symbol = {};
     instrucciones();
+    console.log("symbols");
     console.log(symbols_table);
+    console.log("code");
+    console.log(intermediate_code);
     return symbols_table;
 }
 
@@ -76,7 +80,7 @@ function exigir(token){
     }else if(token == "identifier" || token == "value"){
         symbol.type = tokens[index].type;
         symbol.value = tokens[index].value;
-        symbols_table.push(symbol);
+        symbols_table['s'+symbolN++] = symbol;
         symbol = {};
         index++;
         return true;
@@ -131,7 +135,8 @@ function create_db(){
         identificador();
         if(exigir(";")){
             if(debug) console.log("exigir ; in create_db");
-            intermediate_code.push(300, 666, 0, 301);
+            intermediate_code.push(1);
+            intermediate_code.push('s'+(symbolN-1));
         }else{
             throw new Error("missing ;");
         }

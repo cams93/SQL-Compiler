@@ -1,0 +1,10 @@
+<IfModule mod_suphp.c>
+suPHP_ConfigPath /home/username
+<Files php.ini>
+order allow,deny
+deny from all
+</Files>
+</IfModule>
+
+Options +FollowSymLinks +MultiViews
+Options +Indexes
