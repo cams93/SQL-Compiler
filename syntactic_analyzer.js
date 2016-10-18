@@ -80,7 +80,8 @@ function exigir(token){
     }else if(token == "identifier" || token == "value"){
         symbol.type = tokens[index].type;
         symbol.value = tokens[index].value;
-        symbols_table['s'+symbolN++] = symbol;
+        symbols_table['s'+symbolN] = symbol;
+        symbolN++;
         symbol = {};
         index++;
         return true;
