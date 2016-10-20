@@ -54,7 +54,10 @@ function lex_test(input) {
   output += "Syntactic Analizer<br>";
   output += "-------------------------------------------------<br>";
   for (i in Parser_SQL.symbolsTable) {
-    output += JSON.stringify(Parser_SQL.symbolsTable[i]) + "<br>";
+    var key =  Parser_SQL.symbolsTable[i];
+    var keyIndex = parseInt(key.replace('s',''),10);
+    output += JSON.stringify(key) + " " + Parser_SQL.symbols[keyIndex] + "<br>";
+
   }
 
   output += "-------------------------------------------------<br>";
@@ -167,3 +170,7 @@ function writeCreateField(tableName, fieldName,
   var constraints = xmlDoc.createElement('constraints');
 
 }
+
+$(function() {
+  $('#boton').click();
+})

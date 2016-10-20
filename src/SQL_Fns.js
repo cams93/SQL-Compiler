@@ -36,7 +36,7 @@ fns.createDBCommand = function() {
   fns._consume("DATABASE");
   var token = fns._consume("IDENTIFIER");
   var tokenId = fns._getSymbol(token);
-  fns._code.push(1, tokenId);
+  fns._code.push(1000, tokenId,1001);
   fns._consume("SEMICOLON");
 }
 
@@ -46,6 +46,7 @@ fns.createTableCommand = function() {
   var tokenId = fns._getSymbol(token);
   fns._consume("LEFT_PARENTHESIS");
   // INSERT CODIGO INTERMEDIO DE CREATE_TABLE aqui
+  fns._code.push(2000, tokenId, 2001,2002);
   fns.elementos_tabla();
   fns._consume("RIGHT_PARENTHESIS");
   fns._consume("SEMICOLON");
@@ -99,6 +100,9 @@ fns.columna = function() {
   fns.inlineConstraint();
 
   // INSERTAR CODIGO INTERMEDIO CREAR CAMPO AQUI
+
+  console.log("TYPE " + type);
+  fns._code.push(symbolId);
 }
 
 fns.inlineConstraint = function() {
@@ -227,6 +231,7 @@ fns.identifier = function() {
   var token = fns._consume("IDENTIFIER");
   var symbolId = fns._getSymbol(token);
   // INSERTAR CODIGO INTERMEDIO IDENTIFIER AQUI
+  fns._code.push(symbolId);
 }
 
 // <operador relacional> ::= "<" | "<=" | ">" | ">=" | "==" | "!="
@@ -309,13 +314,17 @@ fns.string = function() {
   var token = fns._consume("STRING");
   var symbolId = fns._getSymbol(token);
   // INSERTAR CODIGO INTERMEDIO STRING AQUI
+  fns._code.push(symbolId);
 }
 
 fns.number = function() {
   var token = fns._consume("NUMBER");
   var symbolId = fns._getSymbol(token);
   // PARSEA EL VALOR DEL TOKEN
+  var token = parseInt(token);
   // INSERTAR CODIGO INTERMEDIO NUMBER AQUI
+
+  fns._code.push(symbolId);
 }
 
 fns.listado_valores = function() {
@@ -351,4 +360,38 @@ fns.conditionals = function() {
   }
 }
 
+fns.insertCommand = function(){
+  if(fns._expect("INSERT")){
+    fns._consume("INSERT");
+    if(fns._expect("INTO")){
+      fns._consume("INTO");
+      var tableName = fns._consume("IDENTIFIER");
+      var tableNameId = fns._getSymbol(tableName);
+      //insert intermediate code here
+      fns._code.push(3000, tableNameId);
+      if(fns._expect("VALUES")){
+        fns._consume("VALUES");
+        if(fns._expect("LEFT_PARENTHESIS")){
+          fns._consume("LEFT_PARENTHESIS");
+          fns._code.push(3007);
+          fns.listado_valores();
+          if(fns._expect("RIGHT_PARENTHESIS")){
+            fns._consume("RIGHT_PARENTHESIS");
+            fns._code.push(3008);
+            if(fns._expect("SEMICOLON")){
+              //insert intermediate code here
+              fns._code.push(3001);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+
 window.SQL_Fns = fns;
+
+
