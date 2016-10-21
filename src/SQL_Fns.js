@@ -55,26 +55,30 @@ fns.createTableCommand = function() {
 // <select command> ::= "SELECT" <values selected> "from" <listado identificadores> <condicionales> ";"
 fns.selectCommand = function() {
   fns._consume("SELECT");
+  fns._code.push(5000);
   // INSERT CODIGO INTERMEDIO DE SELECT aqui
   fns.values_selected();
   fns._consume("FROM");
   fns.listado_identificadores();
-  fns.conditionals();
+  if(fns._expect("WHERE")) {
+    fns.conditionals();
+  }
   fns._consume("SEMICOLON");
+  fns._code.push(5001);
 }
 
 // <insert command> ::= "INSERT" "INTO" <identificador> "VALUES" "(" <listado valores>  ")" ";"
 fns.insertCommand = function(){
-  fns._expect("INSERT");
+  fns._consume("INSERT");
   fns._consume("INTO");
   var tableName = fns._consume("IDENTIFIER");
   var tableNameId = fns._getSymbol(tableName);
   fns._code.push(3000, tableNameId);
   fns._consume("VALUES");
-  fns._expect("LEFT_PARENTHESIS");
+  fns._consume("LEFT_PARENTHESIS");
   fns.listado_valores();
-  fns._expect("RIGHT_PARENTHESIS");
-  fns._expect("SEMICOLON");
+  fns._consume("RIGHT_PARENTHESIS");
+  fns._consume("SEMICOLON");
   fns._code.push(3001);
 }
 
@@ -105,7 +109,7 @@ fns.columna = function() {
     fns._consume("VARCHAR");
     if(fns._expect("LEFT_PARENTHESIS")) {
       fns._consume("LEFT_PARENTHESIS");
-      var number = fns._consume("DIGITS");
+      var number = fns._consume("NUMBER");
       fns._consume("RIGHT_PARENTHESIS");
     }
   }
@@ -224,6 +228,12 @@ fns.FOREIGN_KEY = function() {
 }
 
 fns.listado_identificadores = function() {
+  fns._code.push(2502);
+  fns.listado_identificadores_entry();
+  fns._code.push(2503);
+}
+
+fns.listado_identificadores_entry = function() {
   if(fns._expect("IDENTIFIER")) {
     fns.identifier();
     fns.listado_identificadores_prima();
@@ -236,14 +246,13 @@ fns.listado_identificadores = function() {
 fns.listado_identificadores_prima = function() {
   if(fns._expect("COMMA")) {
     fns._consume("COMMA");
-    fns.listado_identificadores();
+    fns.listado_identificadores_entry();
   }
 }
 
 fns.identifier = function() {
   var token = fns._consume("IDENTIFIER");
   var symbolId = fns._getSymbol(token);
-  // INSERTAR CODIGO INTERMEDIO IDENTIFIER AQUI
   fns._code.push(symbolId);
 }
 
@@ -275,37 +284,37 @@ fns.relational_operator = function() {
 // <
 fns.lessThan = function() {
   fns._consume("LESS_THAN");
-  // INSERTAR CODIGO INTERMEDIO < AQUI
+  fns._code.push(110);
 }
 
 // <=
 fns.lessThanEqual = function() {
   fns._consume("LESS_THAN_EQUALS");
-  // INSERTAR CODIGO INTERMEDIO <= AQUI
+  fns._code.push(113);
 }
 
 // >
 fns.moreThan = function() {
   fns._consume("MORE_THAN");
-  // INSERTAR CODIGO INTERMEDIO > AQUI
+  fns._code.push(111);
 }
 
 // >=
 fns.moreThanEqual = function() {
   fns._consume("MORE_THAN_EQUALS");
-  // INSERTAR CODIGO INTERMEDIO >= AQUI
+  fns._code.push(114);
 }
 
 // ==
 fns.equals = function() {
   fns._consume("EQUALS");
-  // INSERTAR CODIGO INTERMEDIO == AQUI
+  fns._code.push(112);
 }
 
 // !=
 fns.notEquals = function() {
   fns._consume("NOT_EQUAL");
-  // INSERTAR CODIGO INTERMEDIO != AQUI
+  fns._code.push(115);
 }
 
 fns.value_literal = function() {
@@ -326,21 +335,22 @@ fns.value_literal = function() {
 fns.string = function() {
   var token = fns._consume("STRING");
   var symbolId = fns._getSymbol(token);
-  // INSERTAR CODIGO INTERMEDIO STRING AQUI
   fns._code.push(symbolId);
 }
 
 fns.number = function() {
   var token = fns._consume("NUMBER");
   var symbolId = fns._getSymbol(token);
-  // PARSEA EL VALOR DEL TOKEN
-  var token = parseInt(token);
-  // INSERTAR CODIGO INTERMEDIO NUMBER AQUI
-
   fns._code.push(symbolId);
 }
 
 fns.listado_valores = function() {
+  fns._code.push(2500);
+  fns.listado_valores_entry();
+  fns._code.push(2501);
+}
+
+fns.listado_valores_entry = function() {
   fns.value_literal();
   fns.listado_valores_prima();
 }
@@ -348,13 +358,14 @@ fns.listado_valores = function() {
 fns.listado_valores_prima = function() {
   if(fns._expect("COMMA")) {
     fns._consume("COMMA");
-    fns.listado_valores();
+    fns.listado_valores_entry();
   }
 }
 
 fns.values_selected = function() {
   if(fns._expect("ASTERISK")) {
     fns._consume("ASTERISK");
+    fns._code.push(2504);
   }
   else if(fns._expect("IDENTIFIER")) {
     fns.listado_identificadores();
@@ -366,13 +377,12 @@ fns.values_selected = function() {
 
 // <condicionales> ::= lambda | "WHERE" <identificador> <operador relacional>  <value literal>
 fns.conditionals = function() {
-  if(fns._expect("WHERE")) {
-    fns._consume("WHERE");
-    fns.identifier();
-    // INSERT CODIGO INTERMEDIO DE CREATE_DB aqui
-    fns.relational_operator();
-    fns.value_literal();
-  }
+  fns._consume("WHERE");
+  fns._code.push(3500);
+  fns.identifier();
+  fns.relational_operator();
+  fns.value_literal();
+  fns._code.push(3501);
 }
 
 window.SQL_Fns = fns;

@@ -22,7 +22,6 @@ window.SQL_Lex = [
   { id: 'RIGHT_PARENTHESIS', pattern: /^\)/ },
   { id: 'VARCHAR', pattern: /^VARCHAR/i },
   { id: 'DATA_TYPE', pattern: /^(REAL|CHAR|INTEGER|INT|XML|DATE|TIME|DATETIME|BIT)/i },
-  { id: 'DIGIT', pattern: /^[0-9]/ },
   { id: 'NUMBER', pattern: /^[0-9]+/ },
   { id: 'FLOAT', pattern: /^[0-9]+(\.[0-9]+)/ },
   { id: 'COMMA', pattern: /^,/ },
