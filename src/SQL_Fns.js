@@ -1,6 +1,19 @@
 var fns = {};
 
 /**
+ * DATA TYPES CODE MAP
+ */
+fns.dataTypesMap = {
+  "VARCHAR": 100,
+  "BIT": 101,
+  "INTEGER": 102,
+  "DATE":  103,
+  "DATETIME":  104,
+  "TIME":  105,
+  "XML": 106
+};
+
+/**
  * ENTRY POINT FOR GRAMMAR
  */
 fns.init = function() {
@@ -36,30 +49,31 @@ fns.createDBCommand = function() {
   fns._consume("DATABASE");
   var token = fns._consume("IDENTIFIER");
   var tokenId = fns._getSymbol(token);
-  fns._code.push(1000, tokenId,1001);
+  fns._code.push(1000, tokenId, 1001);
   fns._consume("SEMICOLON");
 }
 
+// <create table>::= "create" "table" <identificador> "(" <elementos tabla> ")"  ";"
 fns.createTableCommand = function() {
   fns._consume("TABLE");
   var token = fns._consume("IDENTIFIER");
   var tokenId = fns._getSymbol(token);
   fns._consume("LEFT_PARENTHESIS");
-  // INSERT CODIGO INTERMEDIO DE CREATE_TABLE aqui
-  fns._code.push(2000, tokenId, 2001,2002);
-  fns.elementos_tabla();
+  fns._code.push(2000, tokenId);
+  fns.tableElements();
+  fns.constraintsList();
   fns._consume("RIGHT_PARENTHESIS");
   fns._consume("SEMICOLON");
+  fns._code.push(2010);
 }
 
 // <select command> ::= "SELECT" <values selected> "from" <listado identificadores> <condicionales> ";"
 fns.selectCommand = function() {
   fns._consume("SELECT");
   fns._code.push(5000);
-  // INSERT CODIGO INTERMEDIO DE SELECT aqui
-  fns.values_selected();
+  fns.valuesSelected();
   fns._consume("FROM");
-  fns.listado_identificadores();
+  fns.identifiersList();
   if(fns._expect("WHERE")) {
     fns.conditionals();
   }
@@ -76,49 +90,63 @@ fns.insertCommand = function(){
   fns._code.push(3000, tableNameId);
   fns._consume("VALUES");
   fns._consume("LEFT_PARENTHESIS");
-  fns.listado_valores();
+  fns.valuesList();
   fns._consume("RIGHT_PARENTHESIS");
   fns._consume("SEMICOLON");
   fns._code.push(3001);
 }
 
-fns.elementos_tabla = function() {
+fns.tableElements = function() {
+  fns._code.push(2001);
+  fns.tableElementsEntry();
+  fns._code.push(2007);
+}
+
+fns.tableElementsEntry = function() {
   if(fns._expect("IDENTIFIER")) {
     fns.columna();
-    fns.elementos_tabla_prima();
-  }
-  else {
-    fn.constraint();
+    fns.tableElementsEntryPrime();
   }
 }
 
 // <elementos tabla prima> ::= lambda | "," <elemento tabla> <elementos tabla prima>
-fns.elementos_tabla_prima = function() {
+fns.tableElementsEntryPrime = function() {
   if(fns._expect("COMMA")) {
     fns._consume("COMMA");
-    fns.elementos_tabla();
+    fns.tableElementsEntry();
   }
 }
 
 // <columna> ::= <identificador> <tipo datos> <seccion varios>
 fns.columna = function() {
   var token = fns._consume("IDENTIFIER");
-  var symbolId = fns._getSymbol(token);
+  var tokenId = fns._getSymbol(token);
+
+  fns._code.push(2002, tokenId);
 
   if(fns._expect("VARCHAR")) {
     fns._consume("VARCHAR");
+    fns._code.push(100);
     if(fns._expect("LEFT_PARENTHESIS")) {
       fns._consume("LEFT_PARENTHESIS");
       var number = fns._consume("NUMBER");
       fns._consume("RIGHT_PARENTHESIS");
+      var numberId = fns._getSymbol(number);
+      fns._code.push(numberId);
+    }
+    else {
+      // default condition LENGTH is 1
+      fns._code.push(1);
     }
   }
   else if(fns._expect("DATA_TYPE")) {
-    var type = fns._consume("DATA_TYPE");
+    var typeToken = fns._consume("DATA_TYPE");
+    fns._code.push(fns.dataTypesMap[typeToken.value])
   }
 
   fns.inlineConstraint();
-  // INSERTAR CODIGO INTERMEDIO CREAR CAMPO AQUI
+
+  fns._code.push(2006);
 }
 
 fns.inlineConstraint = function() {
@@ -139,12 +167,12 @@ fns.inlineConstraint = function() {
 fns.PK = function() {
   fns._consume("PRIMARY");
   fns._consume("KEY");
-  // INSERTAR CODIGO INTERMEDIO PRIMARY KEY AQUI
+  fns._code.push(151);
 }
 
 fns.UQ = function(){
   fns._consume("UNIQUE");
-  // INSERTAR CODIGO INTERMEDIO UNIQUE AQUI
+  fns._code.push(154);
 }
 
 // <FK> ::= "references" <identificador> "(" <identificador> ")"
@@ -156,97 +184,125 @@ fns.REFERENCES = function() {
   var fieldName = fns._consume("IDENTIFIER");
   var fieldNameId = fns._getSymbol(fieldName);
   fns._consume("RIGHT_PARENTHESIS");
-
-  // INSERTAR CODIGO INTERMEDIO REFERENCES AQUI
+  fns._code.push(152, tableNameId, fieldNameId, 153);
 }
 
 fns.NN = function(){
   fns._consume("NOT");
   fns._consume("NULL");
-  // INSERTAR CODIGO INTERMEDIO NOT NULL AQUI
+  fns._code.push(150);
+}
+
+fns.constraintsList = function() {
+  fns._code.push(2008);
+  fns.constraintsListEntry();
+  fns._code.push(2009);
+}
+
+fns.constraintsListEntry = function() {
+  if(fns._expect("PRIMARY") || fns._expect("FOREIGN") || fns._expect("UNIQUE") || fns._expect("CHECK")) {
+    fns._code.push(2101);
+    fns.constraint();
+    fns._code.push(2102);
+    fns.constraintsListEntryPrime();
+  }
+}
+
+fns.constraintsListEntryPrime = function() {
+  if(fns._expect("COMMA")) {
+    fns._consume("COMMA");
+    fns.constraintsListEntry();
+  }
 }
 
 // <restriccion> ::= <primary key> | <foreign key> | <unique key> | <check constraint>
 fns.constraint = function() {
   if(fns._expect("PRIMARY")) {
-    fns.primary_key();
+    fns.primaryKeyConstraint();
   }
   else if(fns._expect("FOREIGN")) {
-    fns.foreign_key();
+    fns.foreignKeyConstraint();
   }
   else if(fns._expect("UNIQUE")) {
-    fns.unique_key();
+    fns.uniqueKeyConstraint();
   }
   else if(fns._expect("CHECK")) {
-    fns.check_constraint();
+    fns.checkConstraint();
   }
 }
 
 //<primary key>::= <PK> "(" <listado identificadores>  ")"
-fns.primary_key = function() {
+fns.primaryKeyConstraint = function() {
   fns.PK();
+  fns._code.push(2103);
   fns._consume("LEFT_PARENTHESIS");
-  fns.listado_identificadores();
+  fns.identifiersList();
   fns._consume("RIGHT_PARENTHESIS");
-  // INSERTAR CODIGO INTERMEDIO PRIMARY KEY AQUI
+  fns._code.push(2104);
 }
 
 // <unique key> ::= <UQ> "(" <listado identificadores>  ")"
-fns.unique_key = function(){
+fns.uniqueKeyConstraint = function(){
   fns.UQ();
+  fns._code.push(2107);
   fns._consume("LEFT_PARENTHESIS");
-  fns.listado_identificadores();
+  fns.identifiersList();
   fns._consume("RIGHT_PARENTHESIS");
-  // INSERTAR CODIGO INTERMEDIO UNIQUE KEY AQUI
+  fns._code.push(2108);
 }
 
 //<check_constraint> ::= "check" <identificador> <operador relacional>  <value literal>
-fns.check_constraint = function() {
+fns.checkConstraint = function() {
   fns._consume("CHECK");
+  fns._code.push(156, 2109);
   var fieldName = fns._consume("IDENTIFIER");
   var fieldNameId = fns._getSymbol(fieldName);
+  fns._code.push(fieldNameId);
   fns.relational_operator();
   fns.value_literal();
+  fns._code.push(2110);
 }
 
 // <foreign Key>::=  "foreign" "key" "(" <listado identificadores>  ")" "references" <identificador> "(" <listado identificadores>  ")"
-fns.FOREIGN_KEY = function() {
+fns.foreignKeyConstraint = function() {
   fns._consume("FOREIGN");
   fns._consume("KEY");
-  if(fns_._expect("LEFT_PARENTHESIS")) {
+  fns._code.push(2105);
+  if(fns._expect("LEFT_PARENTHESIS")) {
     fns._consume("LEFT_PARENTHESIS");
-    fns.listado_identificadores();
+    fns.identifiersList();
     fns._consume("RIGHT_PARENTHESIS");
   }
   fns._consume("REFERENCES");
   var tableName = fns._consume("IDENTIFIER");
   var tableNameId = fns._getSymbol(tableName);
+  fns._code.push(tableNameId);
   fns._consume("LEFT_PARENTHESIS");
-  fns.listado_identificadores();
+  fns.identifiersList();
   fns._consume("RIGHT_PARENTHESIS");
-  // INSERTAR CODIGO INTERMEDIO FOREIGN KEY AQUI
+  fns._code.push(2106);
 }
 
-fns.listado_identificadores = function() {
+fns.identifiersList = function() {
   fns._code.push(2502);
-  fns.listado_identificadores_entry();
+  fns.identifiersListEntry();
   fns._code.push(2503);
 }
 
-fns.listado_identificadores_entry = function() {
+fns.identifiersListEntry = function() {
   if(fns._expect("IDENTIFIER")) {
     fns.identifier();
-    fns.listado_identificadores_prima();
+    fns.identifiersListEntryPrime();
   }
   else {
     throw new Error("must provide one or more identifiers");
   }
 }
 
-fns.listado_identificadores_prima = function() {
+fns.identifiersListEntryPrime = function() {
   if(fns._expect("COMMA")) {
     fns._consume("COMMA");
-    fns.listado_identificadores_entry();
+    fns.identifiersList_entry();
   }
 }
 
@@ -279,6 +335,51 @@ fns.relational_operator = function() {
   else {
     throw new Error("expected relational operator");
   }
+}
+
+// valores*
+fns.valuesList = function() {
+  fns._code.push(2500);
+  fns.valuesListEntry();
+  fns._code.push(2501);
+}
+
+// <listado valores> ::= <valor> <listado valores prima>
+fns.valuesListEntry = function() {
+  fns.value_literal();
+  fns.valuesListEntryPrime();
+}
+
+// <listado valores prima> ::= lambda | "," <valor> <listado valores prima>
+fns.valuesListEntryPrime = function() {
+  if(fns._expect("COMMA")) {
+    fns._consume("COMMA");
+    fns.valuesListEntry();
+  }
+}
+
+// <values selected> ::= <asterisco> | <listado identificadores>
+fns.valuesSelected = function() {
+  if(fns._expect("ASTERISK")) {
+    fns._consume("ASTERISK");
+    fns._code.push(2504);
+  }
+  else if(fns._expect("IDENTIFIER")) {
+    fns.identifiersList();
+  }
+  else {
+    throw new Error("expected * or one or more identifiers");
+  }
+}
+
+// <condicionales> ::= lambda | "WHERE" <identificador> <operador relacional>  <value literal>
+fns.conditionals = function() {
+  fns._consume("WHERE");
+  fns._code.push(3500);
+  fns.identifier();
+  fns.relational_operator();
+  fns.value_literal();
+  fns._code.push(3501);
 }
 
 // <
@@ -342,47 +443,6 @@ fns.number = function() {
   var token = fns._consume("NUMBER");
   var symbolId = fns._getSymbol(token);
   fns._code.push(symbolId);
-}
-
-fns.listado_valores = function() {
-  fns._code.push(2500);
-  fns.listado_valores_entry();
-  fns._code.push(2501);
-}
-
-fns.listado_valores_entry = function() {
-  fns.value_literal();
-  fns.listado_valores_prima();
-}
-
-fns.listado_valores_prima = function() {
-  if(fns._expect("COMMA")) {
-    fns._consume("COMMA");
-    fns.listado_valores_entry();
-  }
-}
-
-fns.values_selected = function() {
-  if(fns._expect("ASTERISK")) {
-    fns._consume("ASTERISK");
-    fns._code.push(2504);
-  }
-  else if(fns._expect("IDENTIFIER")) {
-    fns.listado_identificadores();
-  }
-  else {
-    throw new Error("expected * or one or more identifiers");
-  }
-}
-
-// <condicionales> ::= lambda | "WHERE" <identificador> <operador relacional>  <value literal>
-fns.conditionals = function() {
-  fns._consume("WHERE");
-  fns._code.push(3500);
-  fns.identifier();
-  fns.relational_operator();
-  fns.value_literal();
-  fns._code.push(3501);
 }
 
 window.SQL_Fns = fns;

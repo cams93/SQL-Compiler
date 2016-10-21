@@ -28,10 +28,11 @@
 
 		      	<div class="col s10">
           <!-- <textarea class="materialize-textarea" name="lexinput" id="lexinput" placeholder="Query" />INSERT INTO MANOLO VALUES ("hola", 'jamon', 19);</textarea> -->
-					<textarea class="materialize-textarea" name="lexinput" id="lexinput" placeholder="Query" />SELECT juay, da_rita FROM manuel WHERE dick >= 9;</textarea>
+          <!-- <textarea class="materialize-textarea" name="lexinput" id="lexinput" placeholder="Query" />SELECT juay, da_rita FROM manuel WHERE dick >= 9;</textarea> -->
+					<textarea class="materialize-textarea" name="lexinput" id="lexinput" placeholder="Query" />CREATE TABLE lorem(id VARCHAR, ip VARCHAR(100), val XML, PRIMARY KEY(id), CHECK id > 10);</textarea>
 		      	</div>
 		      	<div class="col s2">
-		      		<input type="button" id="boton" class="waves-effect waves-light btn" onclick="lex_test(this.form.lexinput.value)" value="Go!">
+		      		<button id="boton" class="waves-effect waves-light btn" onclick="event.preventDefault(); lex_test(this.form.lexinput.value)">Go!</button>
 			    </div>
 			</form>
 
