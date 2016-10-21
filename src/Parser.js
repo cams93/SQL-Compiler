@@ -68,7 +68,6 @@ var Parser = {
       this.symbolsTable[token.value] = 's' + len;
       return this.symbolsTable[token.value];
     }
-    return null;
   }
 
 };
