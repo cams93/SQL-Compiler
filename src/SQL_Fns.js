@@ -302,7 +302,7 @@ fns.identifiersListEntry = function() {
 fns.identifiersListEntryPrime = function() {
   if(fns._expect("COMMA")) {
     fns._consume("COMMA");
-    fns.identifiersList_entry();
+    fns.identifiersListEntry();
   }
 }
 
