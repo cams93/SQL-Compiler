@@ -30,15 +30,13 @@ function lex_test(input) {
     return;
   }
 
-  var niceXML = vkbeautify.xml('<databases></databases>', 4);
-  document.getElementById("xml").innerHTML = niceXML;
-
+  vkbeautify.xml('<databases></databases>', 4);
 
   document.getElementById("result-text").className = "blue-text text-darken-2";
   document.getElementById("result-text").innerHTML = "Procesamiento correcto";
 
   output += "-------------------------------------------------<br>";
-  output += "           Lexical Analizer<br>";
+  output += "Lexical Analizer<br>";
   output += "-------------------------------------------------<br>";
   for (var i = 0; i < tokens.length; i++) {
     console.log('data');
@@ -63,10 +61,25 @@ function lex_test(input) {
   output += "-------------------------------------------------<br>";
   output += "Intermediate Code<br>";
   output += "-------------------------------------------------<br>";
-  for(var i = 0; i < Parser_SQL.code.length; i++){
-   output += JSON.stringify(Parser_SQL.code[i]) + "<br>";
+  for(i = 0; i < Parser_SQL.code.length; i++){
+    output += JSON.stringify(Parser_SQL.code[i]) + "<br>";
   }
 
+  var xmlDoc = document.implementation.createDocument(null,null,null);
+  var databases = xmlDoc.createElement('databases');
+  xmlDoc.appendChild(databases);
+
+  for(i = 0; i < Parser_SQL.code.length; i++){
+    switch(Parser_SQL.code[i]){
+      //Create database
+      case 1000:
+        databases.appendChild(writeDatabase(Parser_SQL.code[++i]));
+        break;
+      case 1001:
+        break;
+    }
+  }
+  console.log(xmlDoc);
   document.getElementById("lex-output").innerHTML = output;
 
   //output of xml
@@ -106,59 +119,9 @@ function readXml(xml) {
   document.getElementById("xml").innerHTML = niceXML;
 }
 
-
-/**
- * @name writeCreateDatabase
- * @description
- * # function that create a new database in xml format
- * @param {string} dbName Name of the new database
- * @param {xml.responseXML} xmlDoc xml to access the XML DOM
- * @returns {xml} new database in xml format
- */
-function writeCreateDatabase(dbName, xmlDoc) {
-
-  var db = xmlDoc.createElement('database');
-  var genInfo = xmlDoc.createElement('general_information');
-  var name = xmlDoc.createTextNode(dbName);
-  var dbName = xmlDoc.createElement('name_database');
-  var tables = xmlDoc.createElement('tables');
-
-  dbName.appendChild(name);
-  genInfo.appendChild(dbName);
-  db.appendChild(genInfo);
-  db.appendChild(tables);
-
-  return db;
-}
-
-
-/**
- * @name writeCreateTable
- * @description
- * # function that create a new table in xml format
- * @param {string} dbName Name of the database where table will be created
- * @param {string} tableName Name of the table that will be created
- * @param {array} fileds array containing data of fields
- * @param {object} field object containing data of field
- * @param {string} field.name name of field
- * @param {string} field.dataType dataType of field
- * @param {object} field.constraint object containing details of constraint
- * @param {xml.responseXML} xmlDoc xml to access the XML DOM
- * @returns {xml} new database in xml format
- */
-function writeCreateTable(dbName, tableName, fields, xmlDoc) {
-  var db = xmlDoc.getElementsByTagName(dbName)[0];
-  var ammount = xmlDoc.createElement('ammount-field');
-  var fields = xmlDoc.createElement('fields');
-
-
-
-}
-
-
 constraint = {
   nn: 0
-}
+};
 
 function writeCreateField(tableName, fieldName,
   dataType, constraint) {
@@ -173,4 +136,4 @@ function writeCreateField(tableName, fieldName,
 
 $(function() {
   $('#boton').click();
-})
+});
